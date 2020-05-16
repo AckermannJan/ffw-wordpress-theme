@@ -26,6 +26,11 @@ const router = new Router({
       name: 'Page',
       component: Page,
     },
+    {
+      path: '/:postSlug',
+      name: 'Page',
+      component: Page,
+    },
   ],
   mode: 'history',
   base: '',

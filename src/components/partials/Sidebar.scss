@@ -1,0 +1,57 @@
+.sideBarEntry {
+  &__body {
+    background-color: rgba(59,59,59,.34);
+    border-top: solid 2px #af4a45;
+    max-height: 100px;
+    padding: 10px 15px;
+    &--noBg {
+      background-color: transparent;
+    }
+    &--noPadding {
+      padding: 0;
+    }
+  }
+}
+
+.calendar__detail-date {
+  position: absolute;
+  bottom: 0;
+}
+
+.link {
+  color: #000;
+}
+
+.calendar {
+  &__entry {
+    border-bottom: dashed 1px #af4a45;
+    padding-bottom: 10px;
+  }
+  &__body {
+    border-top: solid 2px #af4a45;
+    padding: 10px 15px;
+  }
+  &__date {
+    margin-right: 15px;
+    height: 90px;
+    box-shadow: 0 0 5px 1px rgba(0,0,0,.1);
+    max-width: 70px;
+    border: 5px solid #af4a45;
+    text-align: center;
+    padding-top: 10px;
+    background: linear-gradient(to bottom,transparent,transparent 50%,#af4a45 50%,#af4a45);
+    span:first-child {
+      margin-top: -7px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: block;
+      color: #af4a45;
+    }
+    span:last-child {
+      margin-top: 7px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: block;
+    }
+  }
+}

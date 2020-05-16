@@ -6,7 +6,7 @@ export default {
     axios
       .get(
         SETTINGS.API_BASE_PATH +
-          'categories?sort=name&hide_empty=true&per_page=50'
+        'categories?sort=name&hide_empty=true&per_page=50'
       )
       .then(response => {
         cb(response.data.filter(c => c.name !== 'Uncategorized'));
@@ -51,4 +51,74 @@ export default {
         cb(e);
       });
   },
+
+  getPost(id, cb) {
+    axios
+      .get(SETTINGS.API_BASE_PATH + 'posts/' + id)
+      .then(response => {
+        cb(response.data);
+      })
+      .catch(e => {
+        cb(e);
+      });
+  },
+
+  getAlarm(id, cb) {
+    axios.get(SETTINGS.CUSTOM_API_BASE_PATH + 'getAlarmPost/', {
+      params: {
+        id
+      }
+    })
+        .then(response => {
+        cb(response.data);
+      })
+      .catch(e => {
+        cb(e);
+      });
+  },
+
+  getIndexInfo(cb) {
+    axios.get(SETTINGS.CUSTOM_API_BASE_PATH + 'getIndexInfo/')
+      .then(response => {
+        cb(response.data);
+      })
+      .catch(e => {
+        cb(e);
+      });
+  },
+
+  getSidebarInfo(cb) {
+    axios.get(SETTINGS.CUSTOM_API_BASE_PATH + 'getSidebarInfo/')
+      .then(response => {
+        cb(response.data);
+      })
+      .catch(e => {
+        cb(e);
+      });
+  },
+
+  getAllAlarmsFromYear(year, cb) {
+    axios.get(SETTINGS.CUSTOM_API_BASE_PATH + 'getAllAlarmsFromYear/', {
+      params: {
+        year
+      }
+    })
+      .then(response => {
+        cb(response.data);
+      })
+      .catch(e => {
+        cb(e);
+      });
+  },
+
+  getAllMeetings(cb) {
+    axios.get(SETTINGS.CUSTOM_API_BASE_PATH + 'getAllMeetings/')
+      .then(response => {
+        cb(response.data);
+      })
+      .catch(e => {
+        cb(e);
+      });
+  },
+
 };

@@ -27,7 +27,7 @@ module.exports = {
     },
   },
   plugins,
-  optimization: {
+  /*optimization: {
     chunkIds: isDev ? 'named' : 'total-size',
     minimize: !isDev,
     minimizer: isDev
@@ -50,5 +50,5 @@ module.exports = {
             },
           }),
         ],
-  },
+  },*/
 };

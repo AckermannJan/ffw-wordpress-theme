@@ -4,6 +4,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 plugins = [
   require('./stylelint'),
+  require('./vuetifyLoader'),
   new webpack.ProvidePlugin({
     throttle: 'lodash.throttle',
   }),

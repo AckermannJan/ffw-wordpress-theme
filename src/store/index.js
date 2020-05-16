@@ -7,6 +7,8 @@ import hub from './modules/hub'
 import user from './modules/user'
 import post from './modules/post'
 import page from './modules/page'
+import index from './modules/index'
+import sideBar from './modules/sideBar'
 import categories from './modules/categories'
 
 Vue.use(Vuex)
@@ -20,13 +22,16 @@ let localStorage = createPersist({
 })
 
 export default new Vuex.Store({
+  namespaced: true,
   actions,
   getters,
   modules: {
     hub,
     user,
     post,
+    sideBar,
     page,
+    index,
     categories
   },
   strict: debug,

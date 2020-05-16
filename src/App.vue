@@ -1,60 +1,76 @@
 <template>
-  <div id="my-app" class="flex flex-col md:min-h-screen">
-    <app-header />
-
-    <transition name="loader-animation" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-      <progress-bar :show-loader="showLoader" :loader-style="loaderStyle" />
+  <v-app id="my-app" class="flex flex-col md:min-h-screen">
+    <transition name="fade">
+      <v-overlay :value="isLoading" class="overlay" v-if="isLoading">
+        <div class="welcomeLoader">
+          <img src="https://seeklogo.com/images/F/feuerwehr-loschen-bergen-retten-logo-039F98CA40-seeklogo.com.png" alt="Retten Löschen Bergen Schützen">
+          <p class="welcomeLoader__headline">
+            Unsere Freizeit für Ihre Sicherheit -<br>
+            Seit 140 Jahren
+          </p>
+          <p class="welcomeLoader__text">
+            Wir freuen uns, dass Sie den Weg auf unsere Webseite gefunden haben.<br>
+            Schauen Sie sich um und entdecken Sie die Vielfalt der Feuerwehr Traisa.
+          </p>
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </div>
+      </v-overlay>
     </transition>
 
-    <transition name="page-transition" mode="out-in" appear>
-      <div class="site-content mx-auto py-16 flex-1 px-10 md:px-0 max-w-2xl">
-        <router-view></router-view>
-      </div>
+    <transition name="fade">
+      <app-header v-if="!isLoading" />
     </transition>
 
-    <app-footer />
-  </div>
+    <transition name="fade">
+      <v-container fluid fill-height class="mb-8" v-if="!isLoading">
+        <v-row justify="center">
+          <v-col lg="2" sm="3" xs="12">
+            <Sidebar />
+          </v-col>
+          <v-col lg="5" sm="8" xs="12">
+            <router-view></router-view>
+          </v-col>
+        </v-row>
+      </v-container>
+    </transition>
+
+    <transition name="fade">
+      <app-footer v-if="!isLoading" />
+    </transition>
+  </v-app>
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from 'vuex';
-import Header from './components/partials/Header.vue';
-import Footer from './components/partials/Footer.vue';
-import ProgressBar from './components/partials/ProgressBar.vue';
+  import { mapGetters } from 'vuex';
+  import Header from './components/partials/Header.vue';
+  import Footer from './components/partials/Footer.vue';
+  import Sidebar from "./components/partials/Sidebar";
 
-export default {
-  data() {
-    return {
-      showLoader: true,
-    };
-  },
-  computed: {
-    ...mapGetters({
-      isLoading: 'isLoading',
-      loadingProgress: 'loadingProgress',
-    }),
-
-    loaderStyle() {
-      return `width: ${this.loadingProgress}%;`;
+  export default {
+    data() {
+      return {
+        showLoader: true,
+      };
     },
-  },
+    computed: {
+      ...mapGetters({
+        isLoading: 'index/isLoading',
+        loadingProgress: 'loadingProgress',
+      }),
 
-  components: {
-    appHeader: Header,
-    appFooter: Footer,
-    ProgressBar,
-  },
-
-  watch: {
-    // watch the value of isLoading and once it's false hide the loader
-    isLoading(val) {
-      if (val == false) {
-        let self = this;
-        setTimeout(function() {
-          self.showLoader = false;
-        }, 1000);
-      }
+      loaderStyle() {
+        return `width: ${this.loadingProgress}%;`;
+      },
     },
-  },
-};
+
+    components: {
+      Sidebar,
+      appHeader: Header,
+      appFooter: Footer,
+    },
+  };
 </script>
+
+<style lang="scss">
+  @import "App";
+</style>

@@ -1,8 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "watch": "NODE_ENV=development webpack --watch --config ./webpack/webpack.config.js",
-    "production": "NODE_ENV=production webpack --config ./webpack/webpack.config.js --display-entrypoints",
+    "watch": "webpack --watch --config ./webpack/webpack.config.js --mode=development",
+    "dev": "webpack-dev-server --hot --config ./webpack/webpack.config.js --dev",
+    "production": "SET NODE_ENV=production webpack --config ./webpack/webpack.config.js --display-entrypoints",
     "rmdist": "rimraf dist"
   },
   "devDependencies": {
@@ -16,9 +17,11 @@
     "babel-preset-env": "^1.7.0",
     "browser-sync": "^2.26.7",
     "browser-sync-webpack-plugin": "^2.2.2",
+    "cache-loader": "^4.1.0",
     "cross-env": "^3.2.4",
     "css-loader": "^3.4.2",
     "cssnano": "^4.1.10",
+    "deepmerge": "^4.2.2",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^1.1.11",
     "normalize.css": "^8.0.0",
@@ -29,9 +32,10 @@
     "postcss-hexrgba": "^1.0.2",
     "postcss-import": "^11.1.0",
     "postcss-inherit": "^4.0.3",
-    "postcss-loader": "^2.1.1",
+    "postcss-loader": "^3.0.0",
     "postcss-nested": "^3.0.0",
     "postcss-reporter": "^5.0.0",
+    "postcss-scss": "^2.0.0",
     "postcss-sorting": "^3.1.0",
     "style-loader": "^0.23.1",
     "stylelint": "^13.0.0",
@@ -53,8 +57,14 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "fibers": "^5.0.0",
+    "moment": "^2.25.3",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
     "stylelint-order": "^4.0.0",
     "tailwindcss": "^1.1.4",
-    "vue": "^2.6"
+    "vue": "^2.6",
+    "vuetify": "^2.2.27",
+    "vuetify-loader": "^1.4.3"
   }
 }
