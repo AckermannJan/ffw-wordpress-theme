@@ -8,25 +8,6 @@ function remove_redirects() {
 }
 add_action( 'init', 'remove_redirects' );
 
-// Load scripts
-function load_vue_scripts() {
-	wp_enqueue_script(
-		'vuejs-wordpress-theme-starter-js',
-		get_stylesheet_directory_uri() . '/dist/scripts/index.js',
-		array( 'jquery' ),
-		filemtime( get_stylesheet_directory() . '/dist/scripts/index.js' ),
-		true
-	);
-
-	wp_enqueue_style(
-		'vuejs-wordpress-theme-starter-css',
-		get_stylesheet_directory_uri() . '/dist/styles.css',
-		null,
-		filemtime( get_stylesheet_directory() . '/dist/styles.css' )
-	);
-}
-add_action( 'wp_enqueue_scripts', 'load_vue_scripts', 100 );
-
 /*
  * Custom API DOC
  * - getAlarmPost
@@ -56,22 +37,40 @@ add_action( 'wp_enqueue_scripts', 'load_vue_scripts', 100 );
  */
 
 function getAlarm( $request_data ) {
-    $id = (int)$request_data->get_params()['id'];
-    $post = get_post($id);
-    $alarmierungszeitpunkt = types_get_field_meta_value( 'alarmierungszeitpunkt', $id );
-    $fahrzeuge = types_get_field_meta_value( 'fahrzeuge', $id );
-    $einsatzpersonal = types_get_field_meta_value( 'einsatzpersonal', $id );
-    $weitereKraefte = types_get_field_meta_value( 'weitere-kraefte', $id );
-    $medienbilder = types_get_field_meta_value( 'medienbilder', $id );
-    $einsatzfahrzeuge = types_get_field_meta_value( 'einsatzfahrzeuge', $id );
-    $einsatzort = types_get_field_meta_value( 'einsatzort', $id );
-    $alarmierungsart = types_get_field_meta_value( 'alarmierungsart', $id );
-    $einsatzart = types_get_field_meta_value( 'einsatzart', $id );
-    $einsatzicon = types_get_field_meta_value( 'einsatzicon', $id );
+    $name = $request_data->get_params()['slug'];
+    $args = array(
+        'post_type' => 'einsatz',
+        'name' => $name,
+        'posts_per_page'=>-1,
+        'numberposts'=>-1
+    );
+    $query =  new WP_Query( $args );
+    $post =  $query->post;
+    $alarmierungszeitpunkt = types_get_field_meta_value( 'alarmierungszeitpunkt', $post->ID );
+    $fahrzeuge = types_get_field_meta_value( 'fahrzeuge', $post->ID );
+    $einsatzpersonal = types_get_field_meta_value( 'einsatzpersonal', $post->ID );
+    $weitereKraefte = types_get_field_meta_value( 'weitere-kraefte', $post->ID );
+    $medienbilder = types_get_field_meta_value( 'medienbilder', $post->ID );
+    $einsatzfahrzeuge = types_get_field_meta_value( 'einsatzfahrzeuge', $post->ID );
+    $einsatzort = types_get_field_meta_value( 'einsatzort', $post->ID );
+    $alarmierungsart = types_get_field_meta_value( 'alarmierungsart', $post->ID );
+    $einsatzart = types_get_field_meta_value( 'einsatzart', $post->ID );
+    $einsatzicon = types_get_field_meta_value( 'einsatzicon', $post->ID );
+    $post_content_html = apply_filters('the_content', $post->post_content);
+
+    $array = [];
+    $array2 = [];
+
+    foreach ($fahrzeuge as &$value) {
+        $array[] = $value[0];
+    }
+    foreach (array_filter($array) as &$value) {
+        $array2[] = $value;
+    }
 
     $data = (object) array(
         'alarmierungszeitpunkt' => $alarmierungszeitpunkt,
-        'fahrzeuge' => $fahrzeuge,
+        'fahrzeuge' => $array2,
         'einsatzpersonal' => $einsatzpersonal,
         'weitereKraefte' => $weitereKraefte,
         'medienbilder' => $medienbilder,
@@ -80,6 +79,7 @@ function getAlarm( $request_data ) {
         'alarmierungsart' => $alarmierungsart,
         'einsatzart' => $einsatzart,
         'einsatzicon' => $einsatzicon,
+        'post_content_html' => $post_content_html,
     );
     $data =  (object) array_merge((array) $data, (array) $post);
     return $data;
@@ -89,6 +89,84 @@ add_action( 'rest_api_init', function () {
     register_rest_route( 'types/v1', '/getAlarmPost/', array(
         'methods' => 'GET',
         'callback' => 'getAlarm'
+    ));
+});
+
+/*
+ * Returns all pages inside the archive
+ */
+
+function getArchive( $request_data ) {
+    $args = array(
+        'post_type' => array( 'post', 'page'),
+        'posts_per_page'=>-1,
+        'numberposts'=>-1
+    );
+
+    $the_query = new WP_Query( $args );
+    $posts = $the_query->posts;
+
+    $newPosts = array();
+    foreach ($posts as $post) {
+        $archiv = types_get_field_meta_value( 'archiv', $post->ID );
+        $startBild = types_get_field_meta_value( 'start-bild', $post->ID );
+        $post->post_content = strip_tags($post->post_content);
+        $data = (object) array(
+            'archive' => $archiv,
+            'startBild' => $startBild
+        );
+        if($archiv == "1"){
+            $newPosts[] = (object) array_merge((array) $post, (array) $data);
+        }
+    }
+
+    return $newPosts;
+}
+
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'types/v1', '/getArchive/', array(
+        'methods' => 'GET',
+        'callback' => 'getArchive'
+    ));
+});
+
+/*
+ * Returns data from selected page name
+ */
+
+function getPage( $request_data ) {
+    $name = $request_data->get_params()['slug'];
+    $args = array(
+        'post_type' => 'page',
+        'name' => $name,
+        'posts_per_page'=>-1,
+        'numberposts'=>-1
+    );
+
+    $the_query = new WP_Query( $args );
+    $post = $the_query->post;
+
+    $startBild = types_get_field_meta_value( 'start-bild', $post->ID );
+    $attached_images = types_get_field_meta_value( 'medienbilder', $post->ID );
+    $any_attached_images = types_get_field_meta_value( 'medienverfugbar', $post->ID );
+    $visibleOnStart = types_get_field_meta_value( 'visibleonstart', $post->ID );
+    $content = apply_filters('the_content', $post->post_content);
+    $data = (object) array(
+        'startBild' => $startBild,
+        'visibleOnStart' => $visibleOnStart,
+        'post_content' => $content,
+        'attached_images' => $attached_images,
+        'any_attached_images' => $any_attached_images,
+    );
+
+    $returnData = (object) array_merge((array) $post, (array) $data);
+    return $returnData;
+}
+
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'types/v1', '/getPage/', array(
+        'methods' => 'GET',
+        'callback' => 'getPage'
     ));
 });
 
@@ -277,6 +355,7 @@ function getIndexInfo() {
             'visibleonstart' => $visibleonstart,
             'startBild' => $startBild,
         );
+        $post->post_content = strip_tags($post->post_content);
         $data = (object) array_merge((array) ($post), (array) $data);
         if($visibleonstart){
             $posts[] = $data;

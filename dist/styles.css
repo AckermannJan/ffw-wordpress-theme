@@ -1,9 +1,0 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans&display=swap);body {
-    font-family: 'Open Sans', sans-serif;
-}
-
-.page-content[data-v-3b1a1ca7] {
-& >>> p {
-    margin-bottom: 1rem;
-}
-}
